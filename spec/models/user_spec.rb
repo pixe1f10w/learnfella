@@ -2,17 +2,19 @@
 #
 # Table name: users
 #
-#  id         :integer         not null, primary key
-#  name       :string(255)
-#  email      :string(255)
-#  created_at :datetime        not null
-#  updated_at :datetime        not null
+#  id              :integer         not null, primary key
+#  name            :string(255)
+#  email           :string(255)
+#  created_at      :datetime        not null
+#  updated_at      :datetime        not null
+#  password_digest :string(255)
 #
 
 require 'spec_helper'
 
 describe User do
-  before { @user = User.new name: 'Example User', email: 'user@example.com' }
+  before { @user = User.new( name: 'Example User', email: 'user@example.com', 
+                             password: 'foobar', password_confirmation: 'foobar' ) }
 
   subject{ @user }
 
@@ -21,7 +23,7 @@ describe User do
   it { should respond_to( :password_digest ) }
   it { should respond_to( :password ) }
   it { should respond_to( :password_confirmation ) }
-  it { should respond_ti( :authenticate ) }
+  it { should respond_to( :authenticate ) }
   
   it { should be_valid }
 
@@ -55,21 +57,22 @@ describe User do
   end
 
   describe 'when password is too short' do
-    before { @user.password = @user.password_confiramtion = 'a' * 5 }
+    before { @user.password = @user.password_confirmation = 'a' * 5 }
 
     it { should be_invalid }
   end
 
   describe 'return value of authenticate method' do
     before { @user.save }
-    let( :found_user ) { User.find_by_email @user.email }
+
+    let( :found_user ) { User.find_by_email( @user.email ) }
 
     describe 'with valid password' do
       it { should == found_user.authenticate( @user.password ) }
     end
 
     describe 'with invalid password' do
-      let( :user_for_invalid_password ) { found_user.authenticate 'invalid' }
+      let( :user_for_invalid_password ) { found_user.authenticate( 'invalid' ) }
 
       it { should_not == user_for_invalid_password }
       specify { user_for_invalid_password.should be_false }
@@ -110,5 +113,15 @@ describe User do
     end
 
     it { should_not be_valid }
+  end
+  
+  describe 'email address with mixed case' do
+    let( :mixed_case_email ) { 'fOo@ExAmple.com' }
+
+    it 'should be saved as all lower-case' do
+      @user.email = mixed_case_email
+      @user.save
+      @user.reload.email.should == mixed_case_email.downcase
+    end
   end
 end
