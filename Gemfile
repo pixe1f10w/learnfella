@@ -4,6 +4,8 @@ gem 'rails', '3.2.6'
 gem 'bootstrap-sass'
 gem 'bcrypt-ruby'
 
+gem 'russian', '~> 0.6.0'
+
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
@@ -42,6 +44,7 @@ group :test do
   gem 'libnotify', '0.5.9'
   gem 'guard-spork', '0.3.2'
   gem 'spork', '0.9.0'
+  gem 'factory_girl_rails', '1.4.0'
 end
 
 #group :production do
