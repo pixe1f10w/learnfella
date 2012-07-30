@@ -3,6 +3,9 @@ source 'https://rubygems.org'
 gem 'rails', '3.2.6'
 gem 'bootstrap-sass'
 gem 'bcrypt-ruby'
+gem 'faker', '1.0.1'
+gem 'will_paginate', '3.0.3'
+gem 'bootstrap-will_paginate'
 
 gem 'russian', '~> 0.6.0'
 
@@ -36,6 +39,8 @@ end
 
 group :development do
   gem 'annotate', '~> 2.4.1.beta'
+  gem 'debugger'
+  gem 'ruby-debug-ide'
 end
 
 group :test do

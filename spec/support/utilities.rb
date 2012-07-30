@@ -6,26 +6,29 @@ def full_title page_title
   title
 end
 
-def valid_signin user
+def sign_in user
+  visit signin_path
   fill_in 'Email', with: user.email
   fill_in 'Password', with: user.password
   click_button 'Sign in'
+
+  cookies[ :remember_token ] = user.remember_token
 end
 
 def invalid_signin
   click_button 'Sign in'
 end
 
-def signout
-
+def sign_out
   click_link 'Sign out'
 end
 
-def enter_valid_credentials
-  fill_in 'Name',     with: 'Example User'
-  fill_in 'Email',    with: 'user@example.com'
-  fill_in 'Password', with: 'foobar'
-  fill_in 'Confirmation', with: 'foobar'
+def enter_credentials params = { name: 'example user', email: 'user@example.com', 
+                                 password: 'foobar', confirmation:'foobar' }
+  fill_in 'Name',     with: params[ :name ]
+  fill_in 'Email',    with: params[ :email ]
+  fill_in 'Password', with: params[ :password ]
+  fill_in 'Confirmation', with: params[ :confirmation ]
 end
 
 RSpec::Matchers.define :have_title do |msg|
