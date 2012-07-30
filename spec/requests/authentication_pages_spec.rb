@@ -16,6 +16,12 @@ describe "Authentication" do
 
       it { should have_header signin }
       it { should have_error_message 'Invalid' }
+
+      it { should_not have_link 'Users', href: users_path }
+      it { should_not have_link 'Profile' }
+      it { should_not have_link 'Settings' }
+      it { should_not have_link 'Sign out', href: signout_path }
+      it { should have_link 'Sign in', href: signin_path }
     end
 
     describe 'with valid information' do
@@ -96,6 +102,16 @@ describe "Authentication" do
           end
         end
 
+        describe 'as a admin user' do
+          let( :admin ) { FactoryGirl.create :admin  }
+
+          before { sign_in admin }
+
+          it 'should not be able to delete himself' do
+            expect { delete user_path admin }.not_to change( User, :count )
+          end
+        end
+
         describe 'when attempting to visit a protected page' do
           before do
             visit edit_user_path user
@@ -107,6 +123,14 @@ describe "Authentication" do
           describe 'after signing in' do
             it 'should render the desired protected page' do
               page.should have_title 'Edit user'
+            end
+
+            describe 'when signing in again' do
+              before { sign_in user }
+
+              it 'should render default profile page' do
+                page.should have_title user.name
+              end
             end
           end
         end
