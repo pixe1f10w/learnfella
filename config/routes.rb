@@ -3,6 +3,7 @@ SampleApp::Application.routes.draw do
 
   resources :users
   resources :sessions, only: [ :new, :create, :destroy ]
+  resources :posts, only: [ :create, :destroy ]
 
   match '/help', to: 'static_pages#help'
   match '/about', to: 'static_pages#about'

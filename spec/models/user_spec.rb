@@ -27,9 +27,43 @@ describe User do
   it { should respond_to( :remember_token ) }
   it { should respond_to( :authenticate ) }
   it { should respond_to( :admin ) }
+  it { should respond_to( :posts ) }
 
   it { should be_valid }
   it { should_not be_admin }
+
+  describe 'posts association' do
+    before { @user.save }
+    let!( :older_post ) do
+      FactoryGirl.create :post, user: @user, created_at: 1.day.ago
+    end
+
+    let!( :newer_post ) do
+      FactoryGirl.create :post, user: @user, created_at: 1.hour.ago
+    end
+
+    it 'should have the right posts in the right order' do
+      @user.posts.should == [ newer_post, older_post ]
+    end
+
+    it 'should destroy associated posts' do
+      posts = @user.posts
+      @user.destroy
+
+      posts.each do |post|
+        #post.find_by_id( post.id ).should be_nil
+        ->() { Post.find post.id }.should raise_error ActiveRecord::RecordNotFound
+      end
+    end
+
+    describe 'status' do
+      let( :unfollowed_post ) { FactoryGirl.create :post, user: FactoryGirl.create( :user ) }
+
+      its( :feed ) { should include newer_post }
+      its( :feed ) { should include older_post }
+      its( :feed ) { should_not include unfollowed_post }
+    end
+  end
 
   describe 'with admin attribute set to true' do
     before do
